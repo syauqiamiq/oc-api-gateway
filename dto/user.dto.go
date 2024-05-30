@@ -16,6 +16,10 @@ type UpdateUserInputBody struct {
 	Avatar     string `json:"avatar"`
 }
 
+type LogoutBody struct {
+	UserID string `json:"user_id" binding:"required"`
+}
+
 type LoginInputBody struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`

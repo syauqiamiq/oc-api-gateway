@@ -7,6 +7,7 @@ type UserService interface {
 	Login(payload dto.LoginInputBody) (dto.HttpResponse, error)
 	SaveRefreshToken(userId string, refreshToken string) (dto.HttpResponse, error)
 	GenerateJWTToken(userData dto.User) (tokenString string, refreshTokenString string, err error)
+	Logout(payload dto.LogoutBody) (dto.HttpResponse, error)
 }
 
 type service struct {

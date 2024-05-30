@@ -29,6 +29,7 @@ func main() {
 	routerV1 := router.Group("/api/v1")
 	routerV1.POST("/register", userHandler.RegisterHandler)
 	routerV1.POST("/login", userHandler.LoginHandler)
+	routerV1.POST("/logout", userHandler.LogoutHandler)
 
 	// Media
 	mediaRouteV1 := routerV1.Group("/media")

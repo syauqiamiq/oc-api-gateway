@@ -35,6 +35,23 @@ func (s *service) Register(payload dto.RegisterInputBody) (dto.HttpResponse, err
 	return registerData, nil
 }
 
+func (s *service) Logout(payload dto.LogoutBody) (dto.HttpResponse, error) {
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("SERVICE-LG-ERR 1: %v", err.Error())
+		return dto.HttpResponse{}, err
+	}
+
+	logoutData, err := helper.ApiRequest("POST", BASE_URL, "/user/logout", jsonData)
+	if err != nil {
+		log.Printf("SERVICE-LG-ERR 2: %v", err.Error())
+		return logoutData, err
+	}
+
+	return logoutData, nil
+}
+
 type MyClaims struct {
 	jwt.RegisteredClaims
 	Name   string

@@ -39,6 +39,36 @@ func (h *handler) RegisterHandler(c *gin.Context) {
 	c.JSON(data.Code, response)
 }
 
+func (h *handler) LogoutHandler(c *gin.Context) {
+
+	var input dto.LogoutBody
+	err := c.ShouldBindJSON(&input)
+
+	if err != nil {
+		formattedError := helper.FormatValidationError(err)
+		response := helper.APIResponse(http.StatusBadRequest, "Bad Request", formattedError)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	data, err := h.userService.Logout(input)
+	if err != nil {
+
+		response := helper.APIResponse(http.StatusServiceUnavailable, "Service Unavailable", nil)
+		c.JSON(http.StatusServiceUnavailable, response)
+		return
+	}
+
+	if data.Status == "error" {
+		response := helper.APIResponse(data.Code, data.Message, nil)
+		c.JSON(data.Code, response)
+		return
+	}
+
+	response := helper.APIResponse(data.Code, data.Message, data.Data)
+	c.JSON(data.Code, response)
+}
+
 func (h *handler) LoginHandler(c *gin.Context) {
 
 	var input dto.LoginInputBody
