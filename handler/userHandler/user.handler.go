@@ -84,7 +84,7 @@ func (h *handler) LoginHandler(c *gin.Context) {
 	loginResponse, err := h.userService.Login(input)
 	if err != nil {
 
-		response := helper.APIResponse(http.StatusServiceUnavailable, "Server Unavailable", nil)
+		response := helper.APIResponse(http.StatusServiceUnavailable, "Service Unavailable", nil)
 		c.JSON(response.Code, response)
 		return
 	}
@@ -118,7 +118,7 @@ func (h *handler) LoginHandler(c *gin.Context) {
 
 	saveRefreshTokenRespnse, err := h.userService.SaveRefreshToken(userData.ID, refreshToken)
 	if err != nil {
-		response := helper.APIResponse(http.StatusServiceUnavailable, "Server Unavailable", nil)
+		response := helper.APIResponse(http.StatusServiceUnavailable, "Service Unavailable", nil)
 		c.JSON(response.Code, response)
 		return
 	}
