@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"ocApiGateway/handler/mediaHandler"
+	"ocApiGateway/handler/userHandler"
 	"ocApiGateway/services/mediaService"
+	"ocApiGateway/services/userService"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -19,13 +21,17 @@ func main() {
 
 	mediaService := mediaService.NewService()
 	mediaHandler := mediaHandler.NewHandler(mediaService)
+	userService := userService.NewService()
+	userHandler := userHandler.NewHandler(userService)
 
 	router := gin.Default()
 
 	routerV1 := router.Group("/api/v1")
+	routerV1.POST("/register", userHandler.RegisterHandler)
+	routerV1.POST("/login", userHandler.LoginHandler)
 
+	// Media
 	mediaRouteV1 := routerV1.Group("/media")
-
 	mediaRouteV1.GET("/", mediaHandler.GetAllMediaHandler)
 	mediaRouteV1.DELETE("/:id", mediaHandler.DeleteMediaByIdHandler)
 	mediaRouteV1.POST("/", mediaHandler.UploadImageHandler)
