@@ -1,17 +1,27 @@
 package main
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"log"
 	"ocApiGateway/handler/mediaHandler"
 	"ocApiGateway/handler/userHandler"
+	"ocApiGateway/middleware"
 	"ocApiGateway/services/mediaService"
 	"ocApiGateway/services/userService"
 	"os"
+	"time"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
+
+func getCookieStore() []byte {
+	h := sha1.New()
+	return h.Sum([]byte(time.Now().String()))
+}
 
 func main() {
 	err := godotenv.Load()
@@ -26,10 +36,15 @@ func main() {
 
 	router := gin.Default()
 
+	router.Use(sessions.Sessions("SESSION-DATA", cookie.NewStore(getCookieStore())))
+
 	routerV1 := router.Group("/api/v1")
 	routerV1.POST("/register", userHandler.RegisterHandler)
 	routerV1.POST("/login", userHandler.LoginHandler)
-	routerV1.POST("/logout", userHandler.LogoutHandler)
+	routerV1.POST("/refresh-token", userHandler.RefreshTokenHandler)
+	routerV1.POST("/logout", middleware.AuthMiddleware(), userHandler.LogoutHandler)
+	routerV1.PUT("/my-profile", middleware.AuthMiddleware(), userHandler.UpdateUserHandler)
+	routerV1.GET("/my-profile", middleware.AuthMiddleware(), userHandler.GetProfileHandler)
 
 	// Media
 	mediaRouteV1 := routerV1.Group("/media")

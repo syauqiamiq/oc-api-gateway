@@ -2,6 +2,7 @@ package userService
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"ocApiGateway/dto"
 	"ocApiGateway/helper"
@@ -10,42 +11,66 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
-)
-
-var (
-	_        = godotenv.Load(".env")
-	BASE_URL = os.Getenv("USER_SERVICE_URL")
 )
 
 func (s *service) Register(payload dto.RegisterInputBody) (dto.HttpResponse, error) {
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		log.Printf("SERVICE-R-ERR 1: %v", err.Error())
+		log.Printf("SERVICE-ERR-R 1: %v", err.Error())
 		return dto.HttpResponse{}, err
 	}
 
 	registerData, err := helper.ApiRequest("POST", BASE_URL, "/user/register", jsonData)
 	if err != nil {
-		log.Printf("SERVICE-R-ERR 2: %v", err.Error())
+		log.Printf("SERVICE-ERR-R 2: %v", err.Error())
 		return registerData, err
 	}
 
 	return registerData, nil
 }
 
+func (s *service) GetProfile(userId string) (dto.HttpResponse, error) {
+
+	path := fmt.Sprintf("/user/%s", userId)
+	updateData, err := helper.ApiRequest("GET", BASE_URL, path, nil)
+	if err != nil {
+		log.Printf("SERVICE-ERR-GP 1: %v", err.Error())
+		return updateData, err
+	}
+
+	return updateData, nil
+}
+
+func (s *service) UpdateProfile(userId string, payload dto.UpdateUserInputBody) (dto.HttpResponse, error) {
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("SERVICE-ERR-UP 1: %v", err.Error())
+		return dto.HttpResponse{}, err
+	}
+
+	path := fmt.Sprintf("/user/%s", userId)
+	updateData, err := helper.ApiRequest("PUT", BASE_URL, path, jsonData)
+	if err != nil {
+		log.Printf("SERVICE-ERR-UP 2: %v", err.Error())
+		return updateData, err
+	}
+
+	return updateData, nil
+}
+
 func (s *service) Logout(payload dto.LogoutBody) (dto.HttpResponse, error) {
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		log.Printf("SERVICE-LG-ERR 1: %v", err.Error())
+		log.Printf("SERVICE-ERR-LG 1: %v", err.Error())
 		return dto.HttpResponse{}, err
 	}
 
 	logoutData, err := helper.ApiRequest("POST", BASE_URL, "/user/logout", jsonData)
 	if err != nil {
-		log.Printf("SERVICE-LG-ERR 2: %v", err.Error())
+		log.Printf("SERVICE-ERR-LG 2: %v", err.Error())
 		return logoutData, err
 	}
 
@@ -126,11 +151,18 @@ func (s *service) GenerateJWTToken(userData dto.User) (tokenString string, refre
 		UserID: userData.ID,
 	}
 
+	refreshTokenClaims := MyClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "OC-APIGATEWAY",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(refreshTokenExpireTime) * time.Second)),
+		},
+		Name:   userData.Name,
+		Email:  userData.Email,
+		UserID: userData.ID,
+	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-		Issuer:    "OC-APIGATEWAY",
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(refreshTokenExpireTime) * time.Second)),
-	})
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
 
 	tokenString, err = token.SignedString([]byte(JWT_TOKEN_SECRET))
 	if err != nil {

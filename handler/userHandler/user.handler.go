@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"ocApiGateway/dto"
 	"ocApiGateway/helper"
+	"ocApiGateway/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,13 +36,28 @@ func (h *handler) RegisterHandler(c *gin.Context) {
 		return
 	}
 
-	response := helper.APIResponse(data.Code, data.Message, data.Data)
+	jsonUserData, err := json.Marshal(data.Data)
+	if err != nil {
+		response := helper.APIResponse(http.StatusInternalServerError, err.Error(), nil)
+		c.JSON(response.Code, response)
+		return
+	}
+
+	var userData dto.User
+	err = json.Unmarshal(jsonUserData, &userData)
+	if err != nil {
+		response := helper.APIResponse(http.StatusInternalServerError, err.Error(), nil)
+		c.JSON(response.Code, response)
+		return
+	}
+
+	response := helper.APIResponse(data.Code, data.Message, userData)
 	c.JSON(data.Code, response)
 }
 
-func (h *handler) LogoutHandler(c *gin.Context) {
-
-	var input dto.LogoutBody
+func (h *handler) UpdateUserHandler(c *gin.Context) {
+	accessData := middleware.GetSessionAccessData(c)
+	var input dto.UpdateUserInputBody
 	err := c.ShouldBindJSON(&input)
 
 	if err != nil {
@@ -49,6 +65,82 @@ func (h *handler) LogoutHandler(c *gin.Context) {
 		response := helper.APIResponse(http.StatusBadRequest, "Bad Request", formattedError)
 		c.JSON(http.StatusBadRequest, response)
 		return
+	}
+
+	data, err := h.userService.UpdateProfile(accessData.UserID, input)
+	if err != nil {
+
+		response := helper.APIResponse(http.StatusServiceUnavailable, "Service Unavailable", nil)
+		c.JSON(http.StatusServiceUnavailable, response)
+		return
+	}
+
+	if data.Status == "error" {
+		response := helper.APIResponse(data.Code, data.Message, nil)
+		c.JSON(data.Code, response)
+		return
+	}
+
+	jsonUserData, err := json.Marshal(data.Data)
+	if err != nil {
+		response := helper.APIResponse(http.StatusInternalServerError, err.Error(), nil)
+		c.JSON(response.Code, response)
+		return
+	}
+
+	var userData dto.User
+	err = json.Unmarshal(jsonUserData, &userData)
+	if err != nil {
+		response := helper.APIResponse(http.StatusInternalServerError, err.Error(), nil)
+		c.JSON(response.Code, response)
+		return
+	}
+
+	response := helper.APIResponse(data.Code, data.Message, userData)
+	c.JSON(data.Code, response)
+}
+
+func (h *handler) GetProfileHandler(c *gin.Context) {
+	accessData := middleware.GetSessionAccessData(c)
+	data, err := h.userService.GetProfile(accessData.UserID)
+	if err != nil {
+
+		response := helper.APIResponse(http.StatusServiceUnavailable, "Service Unavailable", nil)
+		c.JSON(http.StatusServiceUnavailable, response)
+		return
+	}
+
+	if data.Status == "error" {
+		response := helper.APIResponse(data.Code, data.Message, nil)
+		c.JSON(data.Code, response)
+		return
+	}
+
+	jsonUserData, err := json.Marshal(data.Data)
+	if err != nil {
+		response := helper.APIResponse(http.StatusInternalServerError, err.Error(), nil)
+		c.JSON(response.Code, response)
+		return
+	}
+
+	var userData dto.User
+	err = json.Unmarshal(jsonUserData, &userData)
+	if err != nil {
+		response := helper.APIResponse(http.StatusInternalServerError, err.Error(), nil)
+		c.JSON(response.Code, response)
+		return
+	}
+
+	response := helper.APIResponse(data.Code, data.Message, userData)
+	c.JSON(data.Code, response)
+}
+
+func (h *handler) LogoutHandler(c *gin.Context) {
+
+	accessData := middleware.GetSessionAccessData(c)
+
+	input := dto.LogoutBody{
+		UserID: accessData.UserID,
 	}
 
 	data, err := h.userService.Logout(input)
@@ -65,7 +157,21 @@ func (h *handler) LogoutHandler(c *gin.Context) {
 		return
 	}
 
-	response := helper.APIResponse(data.Code, data.Message, data.Data)
+	jsonUserData, err := json.Marshal(data.Data)
+	if err != nil {
+		response := helper.APIResponse(http.StatusInternalServerError, err.Error(), nil)
+		c.JSON(response.Code, response)
+		return
+	}
+
+	var userData dto.User
+	err = json.Unmarshal(jsonUserData, &userData)
+	if err != nil {
+		response := helper.APIResponse(http.StatusInternalServerError, err.Error(), nil)
+		c.JSON(response.Code, response)
+		return
+	}
+	response := helper.APIResponse(data.Code, data.Message, userData)
 	c.JSON(data.Code, response)
 }
 
