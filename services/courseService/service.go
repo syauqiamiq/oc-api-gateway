@@ -13,6 +13,12 @@ type CourseService interface {
 	CreateMentor(input dto.MentorInputBody) (dto.HttpResponse, error)
 	UpdateMentorByID(mentorId string, input dto.UpdateMentorInputBody) (dto.HttpResponse, error)
 	DeleteMentorByID(mentorId string) (dto.HttpResponse, error)
+
+	GetCourse() (dto.HttpResponse, error)
+	GetCourseByID(courseId string) (dto.HttpResponse, error)
+	CreateCourse(input dto.CourseInputBody) (dto.HttpResponse, error)
+	UpdateCourseByID(courseId string, input dto.UpdateCourseInputBody) (dto.HttpResponse, error)
+	DeleteCourseByID(courseId string) (dto.HttpResponse, error)
 }
 
 type service struct {

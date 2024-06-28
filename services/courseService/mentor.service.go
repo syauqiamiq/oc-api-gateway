@@ -68,7 +68,7 @@ func (s *service) UpdateMentorByID(mentorId string, input dto.UpdateMentorInputB
 	path := fmt.Sprintf("/mentor/%s", mentorId)
 	data, err := helper.ApiRequest("PUT", COURSE_SERVICE_URL, path, jsonData)
 	if err != nil {
-		log.Printf("SERVICE-ERR-UMBI 1: %v", err.Error())
+		log.Printf("SERVICE-ERR-UMBI 2: %v", err.Error())
 		return data, err
 	}
 
