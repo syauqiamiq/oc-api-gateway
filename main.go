@@ -6,10 +6,12 @@ import (
 	"log"
 	"ocApiGateway/handler/courseHandler"
 	"ocApiGateway/handler/mediaHandler"
+	"ocApiGateway/handler/paymentHandler"
 	"ocApiGateway/handler/userHandler"
 	"ocApiGateway/middleware"
 	"ocApiGateway/services/courseService"
 	"ocApiGateway/services/mediaService"
+	"ocApiGateway/services/paymentService"
 	"ocApiGateway/services/userService"
 	"os"
 	"time"
@@ -38,6 +40,9 @@ func main() {
 
 	courseService := courseService.NewService()
 	courseHandler := courseHandler.NewHandler(courseService)
+
+	paymentService := paymentService.NewService()
+	paymentHandler := paymentHandler.NewHandler(paymentService)
 
 	router := gin.Default()
 
@@ -92,6 +97,11 @@ func main() {
 	// My Course
 	myCourseRouteV1 := routerV1.Group("/my-course")
 	myCourseRouteV1.GET("/", courseHandler.GetMyCourseHandler)
+
+	// Order
+	orderRouteV1 := routerV1.Group("/order")
+	orderRouteV1.GET("/", paymentHandler.GetOrderHandler)
+	orderRouteV1.POST("/", paymentHandler.CheckoutOrderHandler)
 
 	err = router.Run(fmt.Sprintf(":%s", os.Getenv("RUNNING_PORT")))
 	if err != nil {

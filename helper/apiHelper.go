@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"ocApiGateway/dto"
 )
@@ -14,6 +15,16 @@ func ApiRequest(method string, baseUrl string, apiRoute string, body []byte) (dt
 	if err != nil {
 		return dto.HttpResponse{}, err
 	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	logEntry, _ := json.Marshal(map[string]string{
+		"URL":     baseUrl + apiRoute,
+		"METHOD":  method,
+		"BODY":    string(body),
+		"Message": "Sending HTTP request",
+	})
+	log.Println(string(logEntry))
 
 	client := http.Client{}
 
