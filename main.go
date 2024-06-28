@@ -73,6 +73,26 @@ func main() {
 	courseRouteV1.PUT("/:id", courseHandler.UpdateCourseByIDHandler)
 	courseRouteV1.DELETE("/:id", courseHandler.DeleteCourseByIDHandler)
 
+	// Chapter
+	chapterRouteV1 := routerV1.Group("/chapter")
+	chapterRouteV1.GET("/", courseHandler.GetChapterHandler)
+	chapterRouteV1.GET("/:id", courseHandler.GetChapterByIDHandler)
+	chapterRouteV1.POST("/", courseHandler.CreateChapterHandler)
+	chapterRouteV1.PUT("/:id", courseHandler.UpdateChapterByIDHandler)
+	chapterRouteV1.DELETE("/:id", courseHandler.DeleteChapterByIDHandler)
+
+	// Lesson
+	lessonRouteV1 := routerV1.Group("/lesson")
+	lessonRouteV1.GET("/", courseHandler.GetLessonHandler)
+	lessonRouteV1.GET("/:id", courseHandler.GetLessonByIDHandler)
+	lessonRouteV1.POST("/", courseHandler.CreateLessonHandler)
+	lessonRouteV1.PUT("/:id", courseHandler.UpdateLessonByIDHandler)
+	lessonRouteV1.DELETE("/:id", courseHandler.DeleteLessonByIDHandler)
+
+	// My Course
+	myCourseRouteV1 := routerV1.Group("/my-course")
+	myCourseRouteV1.GET("/", courseHandler.GetMyCourseHandler)
+
 	err = router.Run(fmt.Sprintf(":%s", os.Getenv("RUNNING_PORT")))
 	if err != nil {
 		panic("Error When Running")
