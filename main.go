@@ -4,9 +4,11 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"log"
+	"ocApiGateway/handler/courseHandler"
 	"ocApiGateway/handler/mediaHandler"
 	"ocApiGateway/handler/userHandler"
 	"ocApiGateway/middleware"
+	"ocApiGateway/services/courseService"
 	"ocApiGateway/services/mediaService"
 	"ocApiGateway/services/userService"
 	"os"
@@ -34,6 +36,9 @@ func main() {
 	userService := userService.NewService()
 	userHandler := userHandler.NewHandler(userService)
 
+	courseService := courseService.NewService()
+	courseHandler := courseHandler.NewHandler(courseService)
+
 	router := gin.Default()
 
 	router.Use(sessions.Sessions("SESSION-DATA", cookie.NewStore(getCookieStore())))
@@ -51,6 +56,14 @@ func main() {
 	mediaRouteV1.GET("/", mediaHandler.GetAllMediaHandler)
 	mediaRouteV1.DELETE("/:id", mediaHandler.DeleteMediaByIdHandler)
 	mediaRouteV1.POST("/", mediaHandler.UploadImageHandler)
+
+	// Mentor
+	mentorRouteV1 := routerV1.Group("/mentor")
+	mentorRouteV1.GET("/", courseHandler.GetMentorHandler)
+	mentorRouteV1.GET("/:id", courseHandler.GetMentorByIDHandler)
+	mentorRouteV1.POST("/", courseHandler.CreateMentorHandler)
+	mentorRouteV1.PUT("/:id", courseHandler.UpdateMentorByIDHandler)
+	mentorRouteV1.DELETE("/:id", courseHandler.DeleteMentorByIDHandler)
 
 	err = router.Run(fmt.Sprintf(":%s", os.Getenv("RUNNING_PORT")))
 	if err != nil {
