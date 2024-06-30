@@ -6,7 +6,6 @@ import (
 	"log"
 	"ocApiGateway/dto"
 	"ocApiGateway/helper"
-	"os"
 	"strconv"
 	"time"
 
@@ -46,7 +45,7 @@ func (s *service) GenerateNewAccessToken(payload dto.RefreshTokenInputBody) (new
 		}
 
 		// Generate new access token
-		tokenExpireTime, err := strconv.Atoi(os.Getenv("JWT_TOKEN_EXPIRED"))
+		tokenExpireTime, err := strconv.Atoi(s.env.JwtTokenExpired)
 		if err != nil {
 			log.Printf("SERVICE-ERR-GNAT 4: %v", err.Error())
 			return "", err
