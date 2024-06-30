@@ -6,7 +6,6 @@ import (
 	"log"
 	"ocApiGateway/dto"
 	"ocApiGateway/helper"
-	"os"
 	"strconv"
 	"time"
 
@@ -124,13 +123,13 @@ func (s *service) SaveRefreshToken(userId string, refreshToken string) (dto.Http
 }
 
 func (s *service) GenerateJWTToken(userData dto.User) (tokenString string, refreshTokenString string, err error) {
-	tokenExpireTime, err := strconv.Atoi(os.Getenv("JWT_TOKEN_EXPIRED"))
+	tokenExpireTime, err := strconv.Atoi(s.env.JwtTokenExpired)
 	if err != nil {
 		log.Printf("SERVICE-ERR-JWT 1: %v", err.Error())
 		return "", "", err
 	}
 
-	refreshTokenExpireTime, err := strconv.Atoi(os.Getenv("JWT_REFRESH_TOKEN_EXPIRED"))
+	refreshTokenExpireTime, err := strconv.Atoi(s.env.JwtRefreshTokenExpired)
 	if err != nil {
 		log.Printf("SERVICE-ERR-JWT 2: %v", err.Error())
 		return "", "", err
