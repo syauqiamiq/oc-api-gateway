@@ -2,7 +2,10 @@ package helper
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"regexp"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -59,4 +62,12 @@ func RemoveSpecialCharsAndSpaces(input string) string {
 	result := reg.ReplaceAllString(input, "")
 
 	return result
+}
+
+func ReadSecretFile(path string) string {
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalf("Error reading secret file %s: %v", path, err)
+	}
+	return strings.TrimSpace(string(contents))
 }

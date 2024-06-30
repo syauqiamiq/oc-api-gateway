@@ -8,18 +8,10 @@ import (
 	"log"
 	"net/http"
 	"ocApiGateway/dto"
-	"os"
-
-	"github.com/joho/godotenv"
-)
-
-var (
-	_        = godotenv.Load(".env")
-	BASE_URL = os.Getenv("MEDIA_SERVICE_URL")
 )
 
 func (s *service) GetAllMedia() (dto.HttpResponse, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/media", BASE_URL), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/media", s.env.MediaServiceUrl), nil)
 	if err != nil {
 		return dto.HttpResponse{}, err
 	}
@@ -49,7 +41,7 @@ func (s *service) GetAllMedia() (dto.HttpResponse, error) {
 }
 
 func (s *service) DeleteMediaByID(id string) (dto.HttpResponse, error) {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/media/%s", BASE_URL, id), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/media/%s", s.env.MediaServiceUrl, id), nil)
 	if err != nil {
 		log.Printf("ERR 1: %v", err.Error())
 		return dto.HttpResponse{}, err
@@ -95,7 +87,7 @@ func (s *service) UploadMediaImage(data dto.UploadMediaBody) (dto.HttpResponse, 
 		return dto.HttpResponse{}, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/media", BASE_URL), bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/media", s.env.MediaServiceUrl), bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Printf("ERR 2: %v", err.Error())
 		return dto.HttpResponse{}, err

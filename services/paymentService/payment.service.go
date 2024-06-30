@@ -16,7 +16,7 @@ func (s *service) CheckoutOrder(input dto.CheckoutOrderInputBody) (dto.HttpRespo
 		return dto.HttpResponse{}, err
 	}
 
-	data, err := helper.ApiRequest("POST", PAYMENT_SERVICE_URL, "/order", jsonData)
+	data, err := helper.ApiRequest("POST", s.env.PaymentServiceUrl, "/order", jsonData)
 	if err != nil {
 		log.Printf("SERVICE-ERR-CO 2: %v", err.Error())
 		return data, err
@@ -27,7 +27,7 @@ func (s *service) CheckoutOrder(input dto.CheckoutOrderInputBody) (dto.HttpRespo
 
 func (s *service) GetOrder(userId string) (dto.HttpResponse, error) {
 	path := fmt.Sprintf("/order?userId=%s", userId)
-	data, err := helper.ApiRequest("GET", PAYMENT_SERVICE_URL, path, nil)
+	data, err := helper.ApiRequest("GET", s.env.PaymentServiceUrl, path, nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-GL 1: %v", err.Error())
 		return data, err

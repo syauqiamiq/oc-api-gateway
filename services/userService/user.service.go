@@ -21,7 +21,7 @@ func (s *service) Register(payload dto.RegisterInputBody) (dto.HttpResponse, err
 		return dto.HttpResponse{}, err
 	}
 
-	registerData, err := helper.ApiRequest("POST", BASE_URL, "/user/register", jsonData)
+	registerData, err := helper.ApiRequest("POST", s.env.UserServiceUrl, "/user/register", jsonData)
 	if err != nil {
 		log.Printf("SERVICE-ERR-R 2: %v", err.Error())
 		return registerData, err
@@ -33,7 +33,7 @@ func (s *service) Register(payload dto.RegisterInputBody) (dto.HttpResponse, err
 func (s *service) GetProfile(userId string) (dto.HttpResponse, error) {
 
 	path := fmt.Sprintf("/user/%s", userId)
-	updateData, err := helper.ApiRequest("GET", BASE_URL, path, nil)
+	updateData, err := helper.ApiRequest("GET", s.env.UserServiceUrl, path, nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-GP 1: %v", err.Error())
 		return updateData, err
@@ -51,7 +51,7 @@ func (s *service) UpdateProfile(userId string, payload dto.UpdateUserInputBody) 
 	}
 
 	path := fmt.Sprintf("/user/%s", userId)
-	updateData, err := helper.ApiRequest("PUT", BASE_URL, path, jsonData)
+	updateData, err := helper.ApiRequest("PUT", s.env.UserServiceUrl, path, jsonData)
 	if err != nil {
 		log.Printf("SERVICE-ERR-UP 2: %v", err.Error())
 		return updateData, err
@@ -68,7 +68,7 @@ func (s *service) Logout(payload dto.LogoutBody) (dto.HttpResponse, error) {
 		return dto.HttpResponse{}, err
 	}
 
-	logoutData, err := helper.ApiRequest("POST", BASE_URL, "/user/logout", jsonData)
+	logoutData, err := helper.ApiRequest("POST", s.env.UserServiceUrl, "/user/logout", jsonData)
 	if err != nil {
 		log.Printf("SERVICE-ERR-LG 2: %v", err.Error())
 		return logoutData, err
@@ -84,11 +84,6 @@ type MyClaims struct {
 	UserID string
 }
 
-var (
-	JWT_TOKEN_SECRET         = os.Getenv("JWT_TOKEN_SECRET")
-	JWT_REFRESH_TOKEN_SECRET = os.Getenv("JWT_REFRESH_TOKEN_SECRET")
-)
-
 func (s *service) Login(payload dto.LoginInputBody) (dto.HttpResponse, error) {
 
 	loginBody, err := json.Marshal(payload)
@@ -97,7 +92,7 @@ func (s *service) Login(payload dto.LoginInputBody) (dto.HttpResponse, error) {
 		return dto.HttpResponse{}, err
 	}
 
-	loginReponse, err := helper.ApiRequest("POST", BASE_URL, "/user/login", loginBody)
+	loginReponse, err := helper.ApiRequest("POST", s.env.UserServiceUrl, "/user/login", loginBody)
 	if err != nil {
 		log.Printf("SERVICE-ERR-L 2: %v", err.Error())
 		return loginReponse, err
@@ -118,7 +113,7 @@ func (s *service) SaveRefreshToken(userId string, refreshToken string) (dto.Http
 		return dto.HttpResponse{}, err
 	}
 
-	saveRefreshTokenResponse, err := helper.ApiRequest("POST", BASE_URL, "/refresh-token", saveRefreshTokenBody)
+	saveRefreshTokenResponse, err := helper.ApiRequest("POST", s.env.UserServiceUrl, "/refresh-token", saveRefreshTokenBody)
 	if err != nil {
 		log.Printf("SERVICE-ERR-SRT 2: %v", err.Error())
 		return saveRefreshTokenResponse, err
@@ -164,13 +159,13 @@ func (s *service) GenerateJWTToken(userData dto.User) (tokenString string, refre
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
 
-	tokenString, err = token.SignedString([]byte(JWT_TOKEN_SECRET))
+	tokenString, err = token.SignedString([]byte(s.env.JwtTokenSecret))
 	if err != nil {
 		log.Printf("SERVICE-ERR-JWT 3: %v", err.Error())
 		return "", "", err
 	}
 
-	refreshTokenString, err = refreshToken.SignedString([]byte(JWT_REFRESH_TOKEN_SECRET))
+	refreshTokenString, err = refreshToken.SignedString([]byte(s.env.JwtRefreshTokenSecret))
 	if err != nil {
 		log.Printf("SERVICE-ERR-JWT 4: %v", err.Error())
 		return "", "", err

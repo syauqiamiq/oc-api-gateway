@@ -2,9 +2,7 @@ package userService
 
 import (
 	"ocApiGateway/dto"
-	"os"
-
-	"github.com/joho/godotenv"
+	"ocApiGateway/helper"
 )
 
 type UserService interface {
@@ -20,13 +18,11 @@ type UserService interface {
 }
 
 type service struct {
+	env helper.Env
 }
 
-func NewService() *service {
-	return &service{}
+func NewService(env helper.Env) *service {
+	return &service{
+		env: env,
+	}
 }
-
-var (
-	_        = godotenv.Load(".env")
-	BASE_URL = os.Getenv("USER_SERVICE_URL")
-)

@@ -16,7 +16,7 @@ func (s *service) CreateChapter(input dto.ChapterInputBody) (dto.HttpResponse, e
 		return dto.HttpResponse{}, err
 	}
 
-	data, err := helper.ApiRequest("POST", COURSE_SERVICE_URL, "/chapter", jsonData)
+	data, err := helper.ApiRequest("POST", s.env.CourseServiceUrl, "/chapter", jsonData)
 	if err != nil {
 		log.Printf("SERVICE-ERR-CChapter 2: %v", err.Error())
 		return data, err
@@ -27,7 +27,7 @@ func (s *service) CreateChapter(input dto.ChapterInputBody) (dto.HttpResponse, e
 
 func (s *service) GetChapter() (dto.HttpResponse, error) {
 
-	data, err := helper.ApiRequest("GET", COURSE_SERVICE_URL, "/chapter", nil)
+	data, err := helper.ApiRequest("GET", s.env.CourseServiceUrl, "/chapter", nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-GChapter 1: %v", err.Error())
 		return data, err
@@ -38,7 +38,7 @@ func (s *service) GetChapter() (dto.HttpResponse, error) {
 
 func (s *service) GetChapterByID(chapterId string) (dto.HttpResponse, error) {
 	path := fmt.Sprintf("/chapter/%s", chapterId)
-	data, err := helper.ApiRequest("GET", COURSE_SERVICE_URL, path, nil)
+	data, err := helper.ApiRequest("GET", s.env.CourseServiceUrl, path, nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-GChapterBI 1: %v", err.Error())
 		return data, err
@@ -49,7 +49,7 @@ func (s *service) GetChapterByID(chapterId string) (dto.HttpResponse, error) {
 
 func (s *service) DeleteChapterByID(chapterId string) (dto.HttpResponse, error) {
 	path := fmt.Sprintf("/chapter/%s", chapterId)
-	data, err := helper.ApiRequest("DELETE", COURSE_SERVICE_URL, path, nil)
+	data, err := helper.ApiRequest("DELETE", s.env.CourseServiceUrl, path, nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-DChapterBI 1: %v", err.Error())
 		return data, err
@@ -66,7 +66,7 @@ func (s *service) UpdateChapterByID(chapterId string, input dto.UpdateChapterInp
 		return dto.HttpResponse{}, err
 	}
 	path := fmt.Sprintf("/chapter/%s", chapterId)
-	data, err := helper.ApiRequest("PUT", COURSE_SERVICE_URL, path, jsonData)
+	data, err := helper.ApiRequest("PUT", s.env.CourseServiceUrl, path, jsonData)
 	if err != nil {
 		log.Printf("SERVICE-ERR-UChapterBI 2: %v", err.Error())
 		return data, err

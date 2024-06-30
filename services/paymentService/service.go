@@ -2,9 +2,7 @@ package paymentService
 
 import (
 	"ocApiGateway/dto"
-	"os"
-
-	"github.com/joho/godotenv"
+	"ocApiGateway/helper"
 )
 
 type PaymentService interface {
@@ -13,13 +11,11 @@ type PaymentService interface {
 }
 
 type service struct {
+	env helper.Env
 }
 
-func NewService() *service {
-	return &service{}
+func NewService(env helper.Env) *service {
+	return &service{
+		env: env,
+	}
 }
-
-var (
-	_                   = godotenv.Load(".env")
-	PAYMENT_SERVICE_URL = os.Getenv("PAYMENT_SERVICE_URL")
-)

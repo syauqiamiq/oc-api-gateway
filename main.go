@@ -8,6 +8,7 @@ import (
 	"ocApiGateway/handler/mediaHandler"
 	"ocApiGateway/handler/paymentHandler"
 	"ocApiGateway/handler/userHandler"
+	"ocApiGateway/helper"
 	"ocApiGateway/middleware"
 	"ocApiGateway/services/courseService"
 	"ocApiGateway/services/mediaService"
@@ -33,15 +34,17 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	mediaService := mediaService.NewService()
+	env := helper.GetEnv()
+
+	mediaService := mediaService.NewService(env)
 	mediaHandler := mediaHandler.NewHandler(mediaService)
-	userService := userService.NewService()
+	userService := userService.NewService(env)
 	userHandler := userHandler.NewHandler(userService)
 
-	courseService := courseService.NewService()
+	courseService := courseService.NewService(env)
 	courseHandler := courseHandler.NewHandler(courseService)
 
-	paymentService := paymentService.NewService()
+	paymentService := paymentService.NewService(env)
 	paymentHandler := paymentHandler.NewHandler(paymentService)
 
 	router := gin.Default()
@@ -57,13 +60,13 @@ func main() {
 	routerV1.GET("/my-profile", middleware.AuthMiddleware(), userHandler.GetProfileHandler)
 
 	// Media
-	mediaRouteV1 := routerV1.Group("/media")
+	mediaRouteV1 := routerV1.Group("/media").Use(middleware.AuthMiddleware())
 	mediaRouteV1.GET("/", mediaHandler.GetAllMediaHandler)
 	mediaRouteV1.DELETE("/:id", mediaHandler.DeleteMediaByIdHandler)
 	mediaRouteV1.POST("/", mediaHandler.UploadImageHandler)
 
 	// Mentor
-	mentorRouteV1 := routerV1.Group("/mentor")
+	mentorRouteV1 := routerV1.Group("/mentor").Use(middleware.AuthMiddleware())
 	mentorRouteV1.GET("/", courseHandler.GetMentorHandler)
 	mentorRouteV1.GET("/:id", courseHandler.GetMentorByIDHandler)
 	mentorRouteV1.POST("/", courseHandler.CreateMentorHandler)
@@ -71,7 +74,7 @@ func main() {
 	mentorRouteV1.DELETE("/:id", courseHandler.DeleteMentorByIDHandler)
 
 	// Course
-	courseRouteV1 := routerV1.Group("/course")
+	courseRouteV1 := routerV1.Group("/course").Use(middleware.AuthMiddleware())
 	courseRouteV1.GET("/", courseHandler.GetCourseHandler)
 	courseRouteV1.GET("/:id", courseHandler.GetCourseByIDHandler)
 	courseRouteV1.POST("/", courseHandler.CreateCourseHandler)
@@ -79,7 +82,7 @@ func main() {
 	courseRouteV1.DELETE("/:id", courseHandler.DeleteCourseByIDHandler)
 
 	// Chapter
-	chapterRouteV1 := routerV1.Group("/chapter")
+	chapterRouteV1 := routerV1.Group("/chapter").Use(middleware.AuthMiddleware())
 	chapterRouteV1.GET("/", courseHandler.GetChapterHandler)
 	chapterRouteV1.GET("/:id", courseHandler.GetChapterByIDHandler)
 	chapterRouteV1.POST("/", courseHandler.CreateChapterHandler)
@@ -87,7 +90,7 @@ func main() {
 	chapterRouteV1.DELETE("/:id", courseHandler.DeleteChapterByIDHandler)
 
 	// Lesson
-	lessonRouteV1 := routerV1.Group("/lesson")
+	lessonRouteV1 := routerV1.Group("/lesson").Use(middleware.AuthMiddleware())
 	lessonRouteV1.GET("/", courseHandler.GetLessonHandler)
 	lessonRouteV1.GET("/:id", courseHandler.GetLessonByIDHandler)
 	lessonRouteV1.POST("/", courseHandler.CreateLessonHandler)
@@ -95,11 +98,11 @@ func main() {
 	lessonRouteV1.DELETE("/:id", courseHandler.DeleteLessonByIDHandler)
 
 	// My Course
-	myCourseRouteV1 := routerV1.Group("/my-course")
+	myCourseRouteV1 := routerV1.Group("/my-course").Use(middleware.AuthMiddleware())
 	myCourseRouteV1.GET("/", courseHandler.GetMyCourseHandler)
 
 	// Order
-	orderRouteV1 := routerV1.Group("/order")
+	orderRouteV1 := routerV1.Group("/order").Use(middleware.AuthMiddleware())
 	orderRouteV1.GET("/", paymentHandler.GetOrderHandler)
 	orderRouteV1.POST("/", paymentHandler.CheckoutOrderHandler)
 

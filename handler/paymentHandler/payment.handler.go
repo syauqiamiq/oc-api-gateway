@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"ocApiGateway/dto"
 	"ocApiGateway/helper"
+	"ocApiGateway/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -53,8 +54,8 @@ func (h *handler) CheckoutOrderHandler(c *gin.Context) {
 }
 
 func (h *handler) GetOrderHandler(c *gin.Context) {
-	userId := c.Query("userId")
-	data, err := h.paymentService.GetOrder(userId)
+	accessData := middleware.GetSessionAccessData(c)
+	data, err := h.paymentService.GetOrder(accessData.UserID)
 	if err != nil {
 
 		response := helper.APIResponse(http.StatusServiceUnavailable, "Service Unavailable", nil)

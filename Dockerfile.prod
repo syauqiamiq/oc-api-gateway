@@ -1,0 +1,32 @@
+# Use the official Golang image from the Docker Hub
+FROM golang:1.22 AS builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy go.mod and go.sum files to the working directory
+COPY go.mod go.sum ./
+
+# Download the Go module dependencies
+RUN go mod download
+
+# Copy the entire project directory to the container's working directory
+COPY . .
+
+# Build the Go application
+RUN CGO_ENABLED=0 GOOS=linux go build -o output
+
+# Use a minimal base image for the final build
+FROM alpine:latest
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the executable from the builder stage to the final image
+COPY --from=builder /app/output .
+
+# Expose the port that your Go application listens on
+EXPOSE 9111
+
+# Command to run the executable
+CMD ["./output"]

@@ -1,6 +1,9 @@
 package mediaService
 
-import "ocApiGateway/dto"
+import (
+	"ocApiGateway/dto"
+	"ocApiGateway/helper"
+)
 
 type MediaService interface {
 	GetAllMedia() (dto.HttpResponse, error)
@@ -9,8 +12,11 @@ type MediaService interface {
 }
 
 type service struct {
+	env helper.Env
 }
 
-func NewService() *service {
-	return &service{}
+func NewService(env helper.Env) *service {
+	return &service{
+		env: env,
+	}
 }

@@ -15,7 +15,7 @@ import (
 
 func (s *service) ValidateRefreshToken(refreshToken string) (dto.HttpResponse, error) {
 
-	refreshTokenResponse, err := helper.ApiRequest("GET", BASE_URL, fmt.Sprintf("/refresh-token?refresh_token=%s", refreshToken), nil)
+	refreshTokenResponse, err := helper.ApiRequest("GET", s.env.UserServiceUrl, fmt.Sprintf("/refresh-token?refresh_token=%s", refreshToken), nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-VRT 1: %v", err.Error())
 		return refreshTokenResponse, err
@@ -26,7 +26,7 @@ func (s *service) ValidateRefreshToken(refreshToken string) (dto.HttpResponse, e
 func (s *service) GenerateNewAccessToken(payload dto.RefreshTokenInputBody) (newAccessToken string, err error) {
 
 	token, err := jwt.ParseWithClaims(payload.RefreshToken, &dto.MyClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_REFRESH_TOKEN_SECRET")), nil
+		return []byte(s.env.JwtRefreshTokenSecret), nil
 	})
 	if err != nil {
 		log.Printf("SERVICE-ERR-GNAT 1: %v", errors.New("invalid refresh token"))
@@ -63,7 +63,7 @@ func (s *service) GenerateNewAccessToken(payload dto.RefreshTokenInputBody) (new
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenclaims)
 
-		tokenString, err := token.SignedString([]byte(JWT_TOKEN_SECRET))
+		tokenString, err := token.SignedString([]byte(s.env.JwtTokenSecret))
 		if err != nil {
 			log.Printf("SERVICE-ERR-GNAT 5: %v", err.Error())
 			return "", err

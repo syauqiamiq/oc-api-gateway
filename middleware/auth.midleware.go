@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"ocApiGateway/dto"
 	"ocApiGateway/helper"
-	"os"
 	"strings"
 	"time"
 
@@ -33,8 +32,10 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		tokenString := splittedToken[1]
 
+		env := helper.GetEnv()
+
 		token, err := jwt.ParseWithClaims(tokenString, &dto.MyClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_TOKEN_SECRET")), nil
+			return []byte(env.JwtTokenSecret), nil
 		})
 		if err != nil {
 			response := helper.APIResponse(http.StatusUnauthorized, "Invalid token", nil)

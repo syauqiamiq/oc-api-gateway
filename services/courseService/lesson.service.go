@@ -16,7 +16,7 @@ func (s *service) CreateLesson(input dto.LessonInputBody) (dto.HttpResponse, err
 		return dto.HttpResponse{}, err
 	}
 
-	data, err := helper.ApiRequest("POST", COURSE_SERVICE_URL, "/lesson", jsonData)
+	data, err := helper.ApiRequest("POST", s.env.CourseServiceUrl, "/lesson", jsonData)
 	if err != nil {
 		log.Printf("SERVICE-ERR-CL 2: %v", err.Error())
 		return data, err
@@ -27,7 +27,7 @@ func (s *service) CreateLesson(input dto.LessonInputBody) (dto.HttpResponse, err
 
 func (s *service) GetLesson() (dto.HttpResponse, error) {
 
-	data, err := helper.ApiRequest("GET", COURSE_SERVICE_URL, "/lesson", nil)
+	data, err := helper.ApiRequest("GET", s.env.CourseServiceUrl, "/lesson", nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-GL 1: %v", err.Error())
 		return data, err
@@ -38,7 +38,7 @@ func (s *service) GetLesson() (dto.HttpResponse, error) {
 
 func (s *service) GetLessonByID(lessonId string) (dto.HttpResponse, error) {
 	path := fmt.Sprintf("/lesson/%s", lessonId)
-	data, err := helper.ApiRequest("GET", COURSE_SERVICE_URL, path, nil)
+	data, err := helper.ApiRequest("GET", s.env.CourseServiceUrl, path, nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-GLBI 1: %v", err.Error())
 		return data, err
@@ -49,7 +49,7 @@ func (s *service) GetLessonByID(lessonId string) (dto.HttpResponse, error) {
 
 func (s *service) DeleteLessonByID(lessonId string) (dto.HttpResponse, error) {
 	path := fmt.Sprintf("/lesson/%s", lessonId)
-	data, err := helper.ApiRequest("DELETE", COURSE_SERVICE_URL, path, nil)
+	data, err := helper.ApiRequest("DELETE", s.env.CourseServiceUrl, path, nil)
 	if err != nil {
 		log.Printf("SERVICE-ERR-DLBI 1: %v", err.Error())
 		return data, err
@@ -66,7 +66,7 @@ func (s *service) UpdateLessonByID(lessonId string, input dto.UpdateLessonInputB
 		return dto.HttpResponse{}, err
 	}
 	path := fmt.Sprintf("/lesson/%s", lessonId)
-	data, err := helper.ApiRequest("PUT", COURSE_SERVICE_URL, path, jsonData)
+	data, err := helper.ApiRequest("PUT", s.env.CourseServiceUrl, path, jsonData)
 	if err != nil {
 		log.Printf("SERVICE-ERR-ULBI 2: %v", err.Error())
 		return data, err

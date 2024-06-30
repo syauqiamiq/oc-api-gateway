@@ -5,14 +5,15 @@ import (
 	"net/http"
 	"ocApiGateway/dto"
 	"ocApiGateway/helper"
+	"ocApiGateway/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (h *handler) GetMyCourseHandler(c *gin.Context) {
+	accessData := middleware.GetSessionAccessData(c)
 
-	userId := c.Query("userId")
-	data, err := h.courseService.GetMyCourse(userId)
+	data, err := h.courseService.GetMyCourse(accessData.UserID)
 	if err != nil {
 
 		response := helper.APIResponse(http.StatusServiceUnavailable, "Service Unavailable", nil)
