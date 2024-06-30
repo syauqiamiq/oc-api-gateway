@@ -26,6 +26,12 @@ services:
       - USER_SVC_DB_PASSWORD
       - USER_SVC_DB_PORT
       - USER_SVC_DB_NAME
+      - COURSE_SERVICE_URL
+      - PAYMENT_SERVICE_URL
+      - USER_SERVICE_URL
+      - MEDIA_SERVICE_URL
+      - JWT_TOKEN_SECRET
+      - JWT_REFRESH_TOKEN_SECRET
     networks:
       - nginx-proxy-manager_default
     deploy:
