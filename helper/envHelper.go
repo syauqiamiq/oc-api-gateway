@@ -36,9 +36,9 @@ func GetEnv() Env {
 		MEDIA_SERVICE_URL = ReadSecretFile(os.Getenv("MEDIA_SERVICE_URL"))
 		PAYMENT_SERVICE_URL = ReadSecretFile(os.Getenv("PAYMENT_SERVICE_URL"))
 		JWT_TOKEN_SECRET = ReadSecretFile(os.Getenv("JWT_TOKEN_SECRET"))
-		JWT_TOKEN_EXPIRED = ReadSecretFile(os.Getenv("JWT_TOKEN_EXPIRED"))
+		JWT_TOKEN_EXPIRED = os.Getenv("JWT_TOKEN_EXPIRED")
 		JWT_REFRESH_TOKEN_SECRET = ReadSecretFile(os.Getenv("JWT_REFRESH_TOKEN_SECRET"))
-		JWT_REFRESH_TOKEN_EXPIRED = ReadSecretFile(os.Getenv("JWT_REFRESH_TOKEN_EXPIRED"))
+		JWT_REFRESH_TOKEN_EXPIRED = os.Getenv("JWT_REFRESH_TOKEN_EXPIRED")
 	} else {
 		err := godotenv.Load()
 		if err != nil {
